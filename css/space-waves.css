@@ -1,0 +1,56 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  gap: .8rem;
+  font-family: "Exo 2", sans-serif;
+  color: #dbf9ff;
+  background: radial-gradient(circle at 20% 20%, #16436f 0%, transparent 38%), radial-gradient(circle at 80% 10%, #7a1e90 0%, transparent 32%), #040814;
+}
+canvas {
+  width: min(900px, 94vw);
+  height: auto;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  background: linear-gradient(#030611, #030611) padding-box, linear-gradient(130deg, #4df8ff, #ff58bf, #ffe16f, #4df8ff) border-box;
+  background-size: auto, 300% 300%;
+  animation: gradientShift 5s linear infinite;
+  box-shadow: 0 0 26px #56f2ff44;
+}
+.panel {
+  width: min(900px, 94vw);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .7rem;
+  flex-wrap: wrap;
+  font-size: .95rem;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  padding: .65rem .85rem;
+  background: linear-gradient(#0a1120cc, #0a1120cc) padding-box, linear-gradient(130deg, #4df8ff, #ff58bf, #ffe16f, #4df8ff) border-box;
+  background-size: auto, 300% 300%;
+  animation: gradientShift 5s linear infinite;
+}
+h1 { margin: 0; font-family: "Orbitron", sans-serif; }
+.back {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  color: #fff;
+  text-decoration: none;
+  padding: .45rem .7rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background: linear-gradient(#0a1120, #0a1120) padding-box, linear-gradient(130deg, #5efff6, #ff58c5, #ffe771, #5efff6) border-box;
+  background-size: auto, 280% 280%;
+  animation: gradientShift 4.4s linear infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

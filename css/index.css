@@ -1,0 +1,157 @@
+:root {
+  --bg-1: #0c1023;
+  --bg-2: #20103a;
+  --ink: #ecf6ff;
+  --accent: #5ef5ff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow: hidden;
+  color: var(--ink);
+  font-family: "Chakra Petch", sans-serif;
+  background: radial-gradient(circle at 20% 15%, #2d3f86 0%, transparent 30%),
+              radial-gradient(circle at 80% 20%, #8d2f72 0%, transparent 35%),
+              linear-gradient(140deg, var(--bg-1), var(--bg-2));
+}
+
+.aurora {
+  position: fixed;
+  inset: -20%;
+  background: conic-gradient(from 180deg, #15f5ba44, #ff5cb844, #4ca8ff44, #15f5ba44);
+  filter: blur(55px);
+  animation: swirl 14s linear infinite;
+  pointer-events: none;
+}
+
+.scanline {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.045) 0px, rgba(255,255,255,0.045) 1px, transparent 2px, transparent 4px);
+  opacity: .4;
+}
+
+.hero {
+  text-align: center;
+  padding: 3.5rem 1rem 1.25rem;
+  position: relative;
+  z-index: 2;
+}
+
+.eyebrow {
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+  font-weight: 600;
+}
+
+h1 {
+  margin: .4rem 0;
+  font: 700 clamp(2.2rem, 10vw, 5.8rem)/1 "Bungee", cursive;
+  text-shadow: 0 0 12px #77ddffaa, 0 0 34px #ff66cc55;
+}
+
+.subtitle {
+  max-width: 680px;
+  margin: 0 auto;
+  font-size: clamp(1rem, 1.8vw, 1.28rem);
+  opacity: .95;
+}
+
+.game-grid {
+  width: min(1100px, 92vw);
+  margin: 2rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.game-card {
+  display: block;
+  text-decoration: none;
+  color: #fff;
+  padding: 1.2rem;
+  border-radius: 18px;
+  min-height: 230px;
+  position: relative;
+  border: 1px solid #ffffff26;
+  box-shadow: inset 0 0 0 1px #ffffff1c, 0 14px 36px #00000045;
+  transition: transform .2s ease, box-shadow .2s ease;
+  overflow: hidden;
+}
+
+.game-card::before {
+  content: "";
+  position: absolute;
+  width: 170%;
+  height: 170%;
+  left: -35%;
+  top: -35%;
+  background: radial-gradient(circle, #ffffff18 0%, transparent 62%);
+  animation: drift 5s ease-in-out infinite alternate;
+}
+
+.game-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(130deg, #3bf7ff, #ff4db8, #ffe154, #3bf7ff);
+  background-size: 280% 280%;
+  animation: gradientShift 5s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.game-card h2 {
+  margin: 0;
+  font-family: "Bungee", cursive;
+  font-size: 1.6rem;
+}
+
+.game-card p { margin-top: .6rem; max-width: 32ch; }
+
+.game-card span {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  border-radius: 999px;
+  padding: .48rem .95rem;
+  background: #10131f;
+  border: 1px solid transparent;
+  box-shadow: inset 0 0 0 1px #ffffff3a;
+}
+
+.waves { background: linear-gradient(135deg, #00304f, #1a0f5f); }
+.run3 { background: linear-gradient(135deg, #2c1b00, #731540); }
+.doodle { background: linear-gradient(135deg, #26360b, #1f4675); }
+
+.game-card:hover,
+.game-card:focus-visible {
+  transform: translateY(-6px) scale(1.012);
+  box-shadow: inset 0 0 0 1px #ffffff39, 0 18px 40px #00000059;
+}
+
+@keyframes swirl { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes drift { from { transform: translate(-2%, -3%); } to { transform: translate(2%, 3%); } }
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (max-width: 760px) {
+  body { overflow: auto; }
+  .hero { padding-top: 2.4rem; }
+  .game-grid { margin-bottom: 2rem; }
+}
