@@ -13,9 +13,10 @@ const blocks = [];
 let speed = 0.029;
 let dist = 0;
 let over = false;
-const obstacleSpeed = 0.0054;
-const hitNearDepth = 0.86;
-const hitFarDepth = 0.79;
+const obstacleSpeed = 0.009;
+const playerCenterY = 432;
+const playerRadius = 18;
+const spawnGap = 0.32;
 
 addEventListener('keydown', e => {
   if (e.code === 'ArrowLeft') keys.left = true;
@@ -36,9 +37,25 @@ function reset() {
   over = false;
 }
 
+function canSpawn(lane) {
+  return !holes.concat(blocks).some(o => o.depth < spawnGap || (o.lane === lane && o.depth < spawnGap * 1.35));
+}
+
+function randomOpenLane() {
+  const lanes = [0, 1, 2].filter(canSpawn);
+  if (!lanes.length) return null;
+  return lanes[Math.floor(Math.random() * lanes.length)];
+}
+
 function spawn() {
-  if (Math.random() < 0.32) holes.push({ lane: Math.floor(Math.random() * 3), depth: 0 });
-  if (Math.random() < 0.34) blocks.push({ lane: Math.floor(Math.random() * 3), depth: 0, h: 54 + Math.random() * 26 });
+  if (Math.random() < 0.32) {
+    const lane = randomOpenLane();
+    if (lane !== null) holes.push({ lane, depth: 0 });
+  }
+  if (Math.random() < 0.34) {
+    const lane = randomOpenLane();
+    if (lane !== null) blocks.push({ lane, depth: 0, h: 54 + Math.random() * 26 });
+  }
 }
 
 function project(lane, depth) {
@@ -101,19 +118,26 @@ function loop() {
     blocks.forEach(b => b.depth += step);
 
     for (const h of holes) {
-      if (h.lane === player.lane && player.ground && h.depth >= hitFarDepth && h.depth <= hitNearDepth) {
+      const p = project(h.lane, h.depth);
+      const holeBottom = p.y + 7 * p.s;
+      if (h.lane === player.lane && player.ground && holeBottom >= playerCenterY + playerRadius - 2) {
         over = true;
       }
     }
 
     for (const b of blocks) {
-      if (b.lane === player.lane && b.depth >= hitFarDepth && b.depth <= hitNearDepth && player.y > -42) {
+      const p = project(b.lane, b.depth);
+      const blockBottom = p.y;
+      const blockTop = p.y - b.h * p.s;
+      const playerTop = playerCenterY + player.y - playerRadius;
+      const playerBottom = playerCenterY + player.y + playerRadius;
+      if (b.lane === player.lane && blockBottom >= playerTop && blockTop <= playerBottom) {
         over = true;
       }
     }
 
-    for (let i = holes.length - 1; i >= 0; i--) if (holes[i].depth > 1.08) holes.splice(i, 1);
-    for (let i = blocks.length - 1; i >= 0; i--) if (blocks[i].depth > 1.08) blocks.splice(i, 1);
+    for (let i = holes.length - 1; i >= 0; i--) if (!over && project(holes[i].lane, holes[i].depth).y >= floorY) holes.splice(i, 1);
+    for (let i = blocks.length - 1; i >= 0; i--) if (!over && project(blocks[i].lane, blocks[i].depth).y >= floorY) blocks.splice(i, 1);
   }
 
   for (const h of holes) {
