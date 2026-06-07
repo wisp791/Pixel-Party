@@ -13,9 +13,9 @@ const blocks = [];
 let speed = 0.029;
 let dist = 0;
 let over = false;
-const spawnZ = 5.5;
-const hitNearZ = 1.08;
-const hitFarZ = 0.72;
+const obstacleSpeed = 0.0054;
+const hitNearDepth = 0.86;
+const hitFarDepth = 0.79;
 
 addEventListener('keydown', e => {
   if (e.code === 'ArrowLeft') keys.left = true;
@@ -37,12 +37,12 @@ function reset() {
 }
 
 function spawn() {
-  if (Math.random() < 0.32) holes.push({ lane: Math.floor(Math.random() * 3), z: spawnZ });
-  if (Math.random() < 0.34) blocks.push({ lane: Math.floor(Math.random() * 3), z: spawnZ, h: 54 + Math.random() * 26 });
+  if (Math.random() < 0.32) holes.push({ lane: Math.floor(Math.random() * 3), depth: 0 });
+  if (Math.random() < 0.34) blocks.push({ lane: Math.floor(Math.random() * 3), depth: 0, h: 54 + Math.random() * 26 });
 }
 
-function project(lane, z) {
-  const depth = Math.max(0, Math.min(1, (spawnZ - z) / (spawnZ - 0.1)));
+function project(lane, depth) {
+  depth = Math.max(0, Math.min(1, depth));
   const s = 0.18 + depth * 1.12;
   return {
     x: horizonX + laneOffsets[lane] * depth,
@@ -95,27 +95,28 @@ function loop() {
     dist += speed * 60;
     if (Math.random() < 0.045) spawn();
 
-    holes.forEach(h => h.z -= speed);
-    blocks.forEach(b => b.z -= speed);
+    const step = obstacleSpeed + (speed - 0.029) * 0.18;
+    holes.forEach(h => h.depth += step);
+    blocks.forEach(b => b.depth += step);
 
     for (const h of holes) {
-      if (h.lane === player.lane && player.ground && h.z <= hitNearZ && h.z >= hitFarZ) {
+      if (h.lane === player.lane && player.ground && h.depth >= hitFarDepth && h.depth <= hitNearDepth) {
         over = true;
       }
     }
 
     for (const b of blocks) {
-      if (b.lane === player.lane && b.z <= hitNearZ && b.z >= hitFarZ && player.y > -42) {
+      if (b.lane === player.lane && b.depth >= hitFarDepth && b.depth <= hitNearDepth && player.y > -42) {
         over = true;
       }
     }
 
-    for (let i = holes.length - 1; i >= 0; i--) if (holes[i].z < 0.09) holes.splice(i, 1);
-    for (let i = blocks.length - 1; i >= 0; i--) if (blocks[i].z < 0.09) blocks.splice(i, 1);
+    for (let i = holes.length - 1; i >= 0; i--) if (holes[i].depth > 1.08) holes.splice(i, 1);
+    for (let i = blocks.length - 1; i >= 0; i--) if (blocks[i].depth > 1.08) blocks.splice(i, 1);
   }
 
   for (const h of holes) {
-    const p = project(h.lane, h.z);
+    const p = project(h.lane, h.depth);
     const w = 96 * p.s;
     ctx.fillStyle = '#050507';
     ctx.fillRect(p.x - w / 2, p.y - 7 * p.s, w, 14 * p.s);
@@ -124,7 +125,7 @@ function loop() {
   }
 
   for (const b of blocks) {
-    const p = project(b.lane, b.z);
+    const p = project(b.lane, b.depth);
     const w = 68 * p.s;
     const h = b.h * p.s;
     ctx.fillStyle = '#ffb86f';
