@@ -136,8 +136,6 @@ function loop() {
   ctx.beginPath();
   ctx.arc(px, 432 + player.y, 18, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = '#ff8a47';
-  ctx.fillRect(px - 12, 440 + player.y, 24, 20);
 
   scoreEl.textContent = `Distance: ${Math.floor(dist)}`;
 
