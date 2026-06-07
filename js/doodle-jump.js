@@ -116,7 +116,7 @@ function step() {
 
   while (springs.length > 9) springs.shift();
 
-  score = Math.max(score, Math.floor(cam));
+  score = Math.max(score, Math.floor(cam * 0.5));
   scoreEl.textContent = `Height: ${score}`;
 
   if (player.y > canvas.height + 40) over = true;

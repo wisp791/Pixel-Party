@@ -4,13 +4,18 @@ const scoreEl = document.getElementById('score');
 
 const keys = { left: false, right: false, jump: false };
 const player = { lane: 1, y: 0, vy: 0, ground: true };
-const lanes = [310, 450, 590];
+const laneOffsets = [-140, 0, 140];
 const horizonY = 120;
+const horizonX = 450;
+const floorY = 445;
 const holes = [];
 const blocks = [];
 let speed = 0.029;
 let dist = 0;
 let over = false;
+const spawnZ = 5.5;
+const hitNearZ = 1.08;
+const hitFarZ = 0.72;
 
 addEventListener('keydown', e => {
   if (e.code === 'ArrowLeft') keys.left = true;
@@ -32,13 +37,18 @@ function reset() {
 }
 
 function spawn() {
-  if (Math.random() < 0.32) holes.push({ lane: Math.floor(Math.random() * 3), z: 3.0 });
-  if (Math.random() < 0.34) blocks.push({ lane: Math.floor(Math.random() * 3), z: 3.0, h: 54 + Math.random() * 26 });
+  if (Math.random() < 0.32) holes.push({ lane: Math.floor(Math.random() * 3), z: spawnZ });
+  if (Math.random() < 0.34) blocks.push({ lane: Math.floor(Math.random() * 3), z: spawnZ, h: 54 + Math.random() * 26 });
 }
 
 function project(lane, z) {
-  const s = 1 / z;
-  return { x: lanes[lane], y: 445 - (1 - s) * (445 - horizonY), s };
+  const depth = Math.max(0, Math.min(1, (spawnZ - z) / (spawnZ - 0.1)));
+  const s = 0.18 + depth * 1.12;
+  return {
+    x: horizonX + laneOffsets[lane] * depth,
+    y: horizonY + (floorY - horizonY) * depth,
+    s
+  };
 }
 
 function drawTunnel() {
@@ -82,25 +92,20 @@ function loop() {
   if (!over) {
     updatePlayer();
     speed += 0.000014;
-    dist += speed * 120;
+    dist += speed * 60;
     if (Math.random() < 0.045) spawn();
 
     holes.forEach(h => h.z -= speed);
     blocks.forEach(b => b.z -= speed);
 
-    const playerFootY = 446 + player.y;
-    const playerBodyY = 438 + player.y;
-
     for (const h of holes) {
-      const p = project(h.lane, h.z);
-      if (h.lane === player.lane && player.ground && p.s > 2.0 && Math.abs(p.y - playerFootY) < 10) {
+      if (h.lane === player.lane && player.ground && h.z <= hitNearZ && h.z >= hitFarZ) {
         over = true;
       }
     }
 
     for (const b of blocks) {
-      const p = project(b.lane, b.z);
-      if (b.lane === player.lane && p.s > 1.9 && Math.abs(p.y - playerBodyY) < 14 && player.y > -36) {
+      if (b.lane === player.lane && b.z <= hitNearZ && b.z >= hitFarZ && player.y > -42) {
         over = true;
       }
     }
@@ -123,10 +128,10 @@ function loop() {
     const w = 68 * p.s;
     const h = b.h * p.s;
     ctx.fillStyle = '#ffb86f';
-    ctx.fillRect(p.x - w / 2, p.y - h - player.y * 0.8, w, h);
+    ctx.fillRect(p.x - w / 2, p.y - h, w, h);
   }
 
-  const px = lanes[player.lane];
+  const px = horizonX + laneOffsets[player.lane];
   ctx.fillStyle = '#f2f3ff';
   ctx.beginPath();
   ctx.arc(px, 432 + player.y, 18, 0, Math.PI * 2);

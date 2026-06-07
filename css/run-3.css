@@ -33,7 +33,7 @@ canvas {
   background-size: auto, 300% 300%;
   animation: gradientShift 5s linear infinite;
 }
-h1 { margin: 0; font-family: "Racing Sans One", sans-serif; letter-spacing: .04em; }
+h1 { margin: 0; font-family: "Orbitron", sans-serif; letter-spacing: 0; }
 .back {
   position: fixed;
   left: 1rem;

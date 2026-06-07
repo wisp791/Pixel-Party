@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d');
 const scoreEl = document.getElementById('score');
 
 let press = false;
+const activeControls = new Set();
 let score = 0;
 let best = 0;
 let over = false;
@@ -13,7 +14,7 @@ const player = {
   y: 250,
   r: 9,
   dir: -1,
-  verticalStep: 4.8,
+  verticalStep: 6.2,
   forwardSpeed: 6.2,
   color: '#7fefff'
 };
@@ -22,17 +23,37 @@ const walls = [];
 const trail = [];
 
 addEventListener('keydown', e => {
-  if (e.code === 'Space') press = true;
+  if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+    activeControls.add(e.code);
+    press = true;
+  }
   if (e.code === 'KeyR' && over) reset();
 });
 addEventListener('keyup', e => {
-  if (e.code === 'Space') press = false;
+  if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+    activeControls.delete(e.code);
+    press = activeControls.size > 0;
+  }
+});
+addEventListener('mousedown', e => {
+  if (e.button === 0) {
+    activeControls.add('MouseLeft');
+    press = true;
+  }
+});
+addEventListener('mouseup', e => {
+  if (e.button === 0) {
+    activeControls.delete('MouseLeft');
+    press = activeControls.size > 0;
+  }
 });
 
 function reset() {
   player.worldX = 0;
   player.y = canvas.height * 0.5;
   player.dir = -1;
+  activeControls.clear();
+  press = false;
   score = 0;
   over = false;
   walls.length = 0;
@@ -97,7 +118,7 @@ function drawTrail(cameraX) {
 function drawPlayer(screenX) {
   ctx.save();
   ctx.translate(screenX, player.y);
-  ctx.rotate(player.dir * -Math.PI / 4);
+  ctx.rotate(player.dir * Math.PI / 4);
   ctx.fillStyle = '#8bf8ff';
   ctx.beginPath();
   ctx.moveTo(-10, -7);
@@ -161,16 +182,15 @@ function collide(screenX, cameraX) {
 function loop() {
   tick++;
   const screenX = 175;
-  const cameraX = player.worldX - screenX;
-
-  drawBackground(cameraX);
+  let cameraX = player.worldX - screenX;
 
   if (!over) {
     player.dir = press ? -1 : 1;
     player.y += player.verticalStep * player.dir;
     player.worldX += player.forwardSpeed;
+    cameraX = player.worldX - screenX;
 
-    trail.unshift({ worldX: player.worldX - 8, y: player.y + (player.dir * 8) });
+    trail.unshift({ worldX: player.worldX, y: player.y });
     if (trail.length > 120) trail.pop();
 
     if (tick % 48 === 0) spawnWall();
@@ -185,6 +205,7 @@ function loop() {
     if (player.y < 0 || player.y > canvas.height) over = true;
   }
 
+  drawBackground(cameraX);
   drawWalls(cameraX);
   drawTrail(cameraX);
   drawPlayer(screenX);
@@ -197,9 +218,11 @@ function loop() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#fff';
     ctx.font = '700 40px Orbitron';
-    ctx.fillText('WAVE CRASH', 300, 225);
+    ctx.textAlign = 'center';
+    ctx.fillText('WAVE CRASH', canvas.width * 0.5, 225);
     ctx.font = '700 20px Exo 2';
-    ctx.fillText('Press R to restart', 355, 260);
+    ctx.fillText('Press R to restart', canvas.width * 0.5, 260);
+    ctx.textAlign = 'start';
   }
 
   requestAnimationFrame(loop);

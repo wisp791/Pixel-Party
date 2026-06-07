@@ -28,7 +28,7 @@ canvas {
   background-size: auto, 300% 300%;
   animation: gradientShift 5s linear infinite;
 }
-h1 { margin: 0; font: 700 clamp(1.7rem, 7vw, 2.2rem)/1 "Permanent Marker", cursive; }
+h1 { margin: 0; font: 700 clamp(1.7rem, 7vw, 2.2rem)/1 "Orbitron", sans-serif; }
 .back {
   position: fixed;
   left: 1rem;
