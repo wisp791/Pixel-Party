@@ -4,7 +4,7 @@ const scoreEl = document.getElementById('score');
 
 const keys = { left: false, right: false, jump: false };
 const player = { lane: 1, y: 0, vy: 0, ground: true };
-const laneOffsets = [-140, 0, 140];
+const laneOffsets = [-220, 0, 220];
 const horizonY = 120;
 const horizonX = 450;
 const floorY = 445;
@@ -43,10 +43,11 @@ function spawn() {
 
 function project(lane, depth) {
   depth = Math.max(0, Math.min(1, depth));
-  const s = 0.18 + depth * 1.12;
+  const visualDepth = Math.pow(depth, 1.75);
+  const s = 0.14 + visualDepth * 1.35;
   return {
-    x: horizonX + laneOffsets[lane] * depth,
-    y: horizonY + (floorY - horizonY) * depth,
+    x: horizonX + laneOffsets[lane] * visualDepth,
+    y: horizonY + (floorY - horizonY) * visualDepth,
     s
   };
 }
