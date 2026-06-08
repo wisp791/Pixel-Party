@@ -120,8 +120,8 @@ function loop() {
     for (const h of holes) {
       const p = project(h.lane, h.depth);
       const holeBottom = p.y + 7 * p.s;
-      if (h.lane === player.lane && holeBottom >= playerCenterY + playerRadius - 2) {
-        if (!player.ground) h.cleared = true;
+      if (h.lane === player.lane && !player.ground && holeBottom >= playerCenterY - playerRadius) {
+        h.cleared = true;
       }
       if (!h.cleared && h.lane === player.lane && player.ground && holeBottom >= playerCenterY + playerRadius - 2) {
         over = true;
@@ -135,7 +135,7 @@ function loop() {
       const playerTop = playerCenterY + player.y - playerRadius;
       const playerBottom = playerCenterY + player.y + playerRadius;
       const touchingPlayer = blockBottom >= playerTop && blockTop <= playerBottom;
-      if (b.lane === player.lane && !player.ground && touchingPlayer) {
+      if (b.lane === player.lane && !player.ground && blockBottom >= playerCenterY - playerRadius) {
         b.cleared = true;
       }
       if (!b.cleared && b.lane === player.lane && player.ground && touchingPlayer) {
