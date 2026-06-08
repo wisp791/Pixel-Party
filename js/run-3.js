@@ -134,10 +134,11 @@ function loop() {
       const blockTop = p.y - b.h * p.s;
       const playerTop = playerCenterY + player.y - playerRadius;
       const playerBottom = playerCenterY + player.y + playerRadius;
-      if (b.lane === player.lane && blockBottom >= playerCenterY - playerRadius) {
-        if (!player.ground) b.cleared = true;
+      const touchingPlayer = blockBottom >= playerTop && blockTop <= playerBottom;
+      if (b.lane === player.lane && !player.ground && touchingPlayer) {
+        b.cleared = true;
       }
-      if (!b.cleared && b.lane === player.lane && player.ground && blockBottom >= playerTop && blockTop <= playerBottom) {
+      if (!b.cleared && b.lane === player.lane && player.ground && touchingPlayer) {
         over = true;
       }
     }
